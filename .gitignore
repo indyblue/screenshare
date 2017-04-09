@@ -1,0 +1,9 @@
+.*~
+.*.swp
+*.mp4
+node_modules/*
+old/*
+dixie/*
+NPM
+node
+electron
