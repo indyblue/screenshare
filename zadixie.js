@@ -1611,87 +1611,76 @@ ne_is_suspend_element(id)
 
 var ctx_=new nestegg();
 //1410
-function
-nestegg_init(context, io, callback)
-{
-  var r=int_;
-  var id=[0], version=[0], docversion=[uint64_t];
-  var track;//*=new ebml_list_node()
-  var doctype=[char_];//*
-  var ctx = ctx_;//todo: null *
+function nestegg_init(context, io, callback) {
+	var r=int_;
+	var id=[0], version=[0], docversion=[uint64_t];
+	var track; //=new ebml_list_node()
+	var doctype=[char_];
+	var ctx = ctx_; //todo: null
 
-  if (!(io.read && io.seek && io.tell))
-    return -1;
+	if (!(io.read && io.seek && io.tell)) return -1;
 
-  //todo: ctx = ne_alloc(sizeof(ctx));//*
+	//todo: ctx = ne_alloc(sizeof(ctx));//*
+	//todo: ctx.io = ne_alloc(sizeof(*ctx->io));
+	ctx.io = io;
+	ctx.alloc_pool = ne_pool_init();
 
-  //todo: ctx.io = ne_alloc(sizeof(*ctx->io));
-  ctx.io = io;//*
-//  ctx.log = callback;
-  ctx.alloc_pool = ne_pool_init();
+	r = ne_peek_element(ctx, id, null);
+	if (r != 1) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-//  if (!ctx.log)
-//    ctx.log = ne_null_log_callback;
+	if (id[0] != ID_EBML) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-  r = ne_peek_element(ctx, id, null);
-  if (r != 1) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
+	ne_ctx_push(ctx, ne_top_level_elements, ctx);
 
-  if (id[0] != ID_EBML) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
+	r = ne_parse(ctx, null);
 
-//  ctx.log(ctx, NESTEGG_LOG_DEBUG, "ctx %p", ctx);
+	if (r != 1) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-  ne_ctx_push(ctx, ne_top_level_elements, ctx);
+	if (ne_get_uint(ctx.ebml.ebml_read_version, version) != 0)
+		version = 1;
+	if (version[0] != 1) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-  r = ne_parse(ctx, null);
+	if (ne_get_string(ctx.ebml.doctype, doctype) != 0)
+		doctype[0] = "matroska";
+	if (strcmp(doctype[0], "webm") != 0) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-  if (r != 1) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
+	if (ne_get_uint(ctx.ebml.doctype_read_version, docversion) != 0)
+		docversion[0] = 1;
+	if (docversion[0] < 1 || docversion[0] > 2) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-  if (ne_get_uint(ctx.ebml.ebml_read_version, version) != 0)
-    version = 1;
-  if (version[0] != 1) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
+	if (!ctx.segment.tracks.track_entry.head) {
+		nestegg_destroy(ctx);
+		return -1;
+	}
 
-  if (ne_get_string(ctx.ebml.doctype, doctype) != 0)
-    doctype[0] = "matroska";
-  if (strcmp(doctype[0], "webm") != 0) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
+	track = ctx.segment.tracks.track_entry.head;
+	ctx.track_count = 0;
 
-  if (ne_get_uint(ctx.ebml.doctype_read_version, docversion) != 0)
-    docversion[0] = 1;
-  if (docversion[0] < 1 || docversion[0] > 2) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
+	while (track) {
+		ctx.track_count += 1;
+		track = track.next;
+	}
 
-  if (!ctx.segment.tracks.track_entry.head) {
-    nestegg_destroy(ctx);
-    return -1;
-  }
-
-  track = ctx.segment.tracks.track_entry.head;
-  ctx.track_count = 0;
-
-  while (track) {
-    ctx.track_count += 1;
-    track = track.next;
-  }
-
-  context[0]=ctx;
-
-  return 0;
+	context[0]=ctx;
+	return 0;
 }
 
 function //1494
@@ -7645,59 +7634,48 @@ nestegg_tell_cb(userdata)
 
 //570
 function
-file_is_webm(input,
-             fourcc,
-             width,
-             height,
-             fps_den,
-             fps_num)
-{
-    var i=int_, n=[int_];
-    var track_type = -1;
+file_is_webm(input, fourcc, width, height, fps_den, fps_num) {
+	var i=int_, n=[int_];
+	var track_type = -1;
 
-    //todo by d nestegg_io
-	var io = {read:nestegg_read_cb, seek:nestegg_seek_cb, tell:nestegg_tell_cb,
-                     userdata:input.infile};//nestegg_io
-    var params=new nestegg_video_params();
+	var io = {
+		read:nestegg_read_cb, 
+		seek:nestegg_seek_cb, 
+		tell:nestegg_tell_cb,
+		userdata:input.infile
+	};
+	var params=new nestegg_video_params();
 	input.nestegg_ctx = [input.nestegg_ctx];
-    if(nestegg_init(input.nestegg_ctx, io, null))
-        alert('goto fail');
+	if(nestegg_init(input.nestegg_ctx, io, null)) 
+		alert('goto fail');
 	input.nestegg_ctx=input.nestegg_ctx[0];
 
-    if(nestegg_track_count(input.nestegg_ctx, n))
-        alert('goto fail');
+	if(nestegg_track_count(input.nestegg_ctx, n))
+		alert('goto fail');
 
-    for(i=0; i<n; i++)
-    {
-        track_type = nestegg_track_type(input.nestegg_ctx, i);
+	for(i=0; i<n; i++) {
+		track_type = nestegg_track_type(input.nestegg_ctx, i);
 
-        if(track_type == NESTEGG_TRACK_VIDEO)
-            break;
-        else if(track_type < 0)
-            alert('goto fail');
-    }
+		if(track_type == NESTEGG_TRACK_VIDEO) break;
+		else if(track_type < 0) alert('goto fail');
+	}
 
-    if(nestegg_track_codec_id(input.nestegg_ctx, i) != NESTEGG_CODEC_VP8)
-    {
-        fprintf(stderr, "Not VP8 video, quitting.\n");
-        exit(1);
-    }
+	if(nestegg_track_codec_id(input.nestegg_ctx, i) != NESTEGG_CODEC_VP8) {
+		fprintf(stderr, "Not VP8 video, quitting.\n");
+		exit(1);
+	}
 
-    input.video_track = i;
+	input.video_track = i;
 
-    if(nestegg_track_video_params(input.nestegg_ctx, i, params))
-        alert('goto fail');
+	if(nestegg_track_video_params(input.nestegg_ctx, i, params))
+		alert('goto fail');
 
-    fps_den[0] = 0;
-    fps_num[0] = 0;
-    fourcc[0] = VP8_FOURCC;
-    width[0] = params.width;
-    height[0] = params.height;
-    return 1;
-/*fail:
-    input.nestegg_ctx = null;
-    //rewind(input.infile);
-    return 0;*/
+	fps_den[0] = 0;
+	fps_num[0] = 0;
+	fourcc[0] = VP8_FOURCC;
+	width[0] = params.width;
+	height[0] = params.height;
+	return 1;
 }
 
 
