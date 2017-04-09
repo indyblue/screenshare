@@ -45,27 +45,23 @@ var SEEK_END    = 2;
 var SEEK_SET    = 0;
 
 var buffer8k=function() {return Arr(8800,0)};
-//fread
+
 //size_t fread ( void * ptr, size_t size, size_t count, FILE * stream );
 function fread ( ptr, size, count, stream ) {
 	ptr.val=new buffer8k();//new Array();
 	//todo: size include
-	
+
 	if(stream.data.length<count+stream.data_off) {stream.data_off += count; return 0; }
 	for(var i=0;i<count;++i)
 		ptr.val[i]=(stream.data[stream.data_off++]);
-		ptr.val.length=count;
+	ptr.val.length=count;
 	return i;
 }
-//fseek
 
-//ftell
 //long int ftell ( FILE * stream );
 function ftell(stream) {
 	return stream.data_off;
 }
-//ferror
-//int ferror ( FILE * stream );
 
 //feof
 function feof(stream) {
@@ -92,45 +88,26 @@ var CHAR_BIT      = 8;         /* number of bits in a char */
 var ptrdiff_t=int_;
 
 var UINT8=char_; var INT16=short_;
-/*function convertBinaryToArray(binary) {
-	var arr = new Array();
-	if(binary.length<200000)
-	var num=binary.length; else num=200000;
-	for(i=0;i<num;++i)
-	arr.push(binary.charCodeAt(i));
-  return arr;
-}*/
 
 function newObjectIt(ObjIt) {
   return (typeof ObjIt==='undefined')?'error':JSON.parse(JSON.stringify(ObjIt));
 }
 
 function memcpy(dst, dst_off, src, src_off, num) {
-	var i;
-	for(i=0;i<num;++i)
+	for(var i=0;i<num;++i)
 		dst[dst_off + i] = src[src_off + i];
 	return dst;
 }
 
 function memset(ptr, ptr_off, value, num) {
-	var i=0;
-		for(i=0; i<num; ++i) 
-			ptr[ptr_off + i]=value;
+	for(var i=0; i<num; ++i) 
+		ptr[ptr_off + i]=value;
 }
-//function memset_O(ptr, ptr_off, value, num) {
-//	if(typeof ptr=='object')
-//	for (var key in ptr) {
-//		//if(typeof ptr[key]!='object') {
-//			ptr[key]=value;
-//		//}
-//	}
-//}
 
 function malloc(size,value) {
-  var i;
-  var output = new Array(); for (i = 0; i < size; ++i) output.push(value);
+	var output = new Array(); 
+	for (var i = 0; i < size; ++i) output.push(value);
   return output
-  //return size
 }
 
 function assert(bCondition) {
@@ -147,20 +124,6 @@ function setjmp(jmp) {
 function offsetof(val1,val2) {
 	return val2;
 }
-
-//function sizeof(val) {
-//	return 1;
-//}
-
-//function intBitLeft(uint_t, lefts) {
-//	//same as (int64)uint64_t<<lefts
-//	var zeros = new Array();
-//	var i;
-//	for(i=0;i<lefts;++i) 
-//		zeros[i] ='0';
-//	bits = ( uint_t.toString(2) +''+ zeros.join("") );
-//	return parseInt(bits,2);
-//}
 
 function Arr(len,val) {
 	var i;
@@ -181,26 +144,14 @@ function Arr_nOI(len,val) {
 }
 
 function ArrM(AOfLen,val) {
-	var a;
 	var result, resStr=new Array();
-	
-	for (a = (AOfLen.length-1); a >= 0; --a)
+	for (var a = (AOfLen.length-1); a >= 0; --a)
 		val = newObjectIt(Arr(AOfLen[a],val));
 	return val;
 }
 
-///////////////////////////////
-//if(!Object.keys) Object.keys = function(o){  
-//// if (o !== Object(o))  
-////	  throw new TypeError('Object.keys called on non-object');  
-// var ret=[],p;  
-// for(p in o) if(Object.prototype.hasOwnProperty.call(o,p)) ret.push(p);  
-// return ret;  
-//}  
-//
 function create_obj_vals_from_arrayChilds(Obj,Arr) {
-	var i;
-	for(i=0;i<Arr.length;++i)
+	for(var i=0;i<Arr.length;++i)
 		Arr[i]=create_obj_vals_from_array(new Obj(),Arr[i]);
 	return Arr;
 }
@@ -210,8 +161,7 @@ function create_obj_vals_from_array(Obj,Arr) {
 	for (var key in new_Obj) {
 		if(typeof new_Obj[key]=='object' && (Object.keys(new_Obj[key]).length==Arr[i].length)) {
 			new_Obj[key]=create_obj_vals_from_array(new_Obj[key],Arr[i]);
-		} else
-		{
+		} else {
 			new_Obj[key]=Arr[i];
 		}
 		i++;
@@ -220,52 +170,48 @@ function create_obj_vals_from_array(Obj,Arr) {
 }
 
 
-//dixie functions & ariables
+//dixie functions & variables
 //74
 var
-    DC_PRED=0,            /* average of above and left pixels */
-    V_PRED=1,             /* vertical prediction */
-    H_PRED=2,             /* horizontal prediction */
-    TM_PRED=3,            /* Truemotion prediction */
-    B_PRED=4,             /* block based prediction, each block has its own prediction mode */
+	DC_PRED=0,            /* average of above and left pixels */
+	V_PRED=1,             /* vertical prediction */
+	H_PRED=2,             /* horizontal prediction */
+	TM_PRED=3,            /* Truemotion prediction */
+	B_PRED=4,             /* block based prediction, each block has its own prediction mode */
 
-    NEARESTMV=5,
-    NEARMV=6,
-    ZEROMV=7,
-    NEWMV=8,
-    SPLITMV=9,
+	NEARESTMV=5,
+	NEARMV=6,
+	ZEROMV=7,
+	NEWMV=8,
+	SPLITMV=9,
 
-    MB_MODE_COUNT=10
-;// MB_PREDICTION_MODE;
+	MB_MODE_COUNT=10;
 
 //109
 var
-//{
-    B_DC_PRED=0,          /* average of above and left pixels */
-    B_TM_PRED=1,
+	B_DC_PRED=0,          /* average of above and left pixels */
+	B_TM_PRED=1,
 
-    B_VE_PRED=2,           /* vertical prediction */
-    B_HE_PRED=3,           /* horizontal prediction */
+	B_VE_PRED=2,           /* vertical prediction */
+	B_HE_PRED=3,           /* horizontal prediction */
 
-    B_LD_PRED=4,
-    B_RD_PRED=5,
+	B_LD_PRED=4,
+	B_RD_PRED=5,
 
-    B_VR_PRED=6,
-    B_VL_PRED=7,
-    B_HD_PRED=8,
-    B_HU_PRED=9,
+	B_VR_PRED=6,
+	B_VL_PRED=7,
+	B_HD_PRED=8,
+	B_HU_PRED=9,
 
-    LEFT4X4=10,
-    ABOVE4X4=11,
-    ZERO4X4=12,
-    NEW4X4=13,
+	LEFT4X4=10,
+	ABOVE4X4=11,
+	ZERO4X4=12,
+	NEW4X4=13,
 
-    B_MODE_COUNT=14
-;//} B_PREDICTION_MODE;
+	B_MODE_COUNT=14;
 
 function CODEC_INTERFACE(id,arr) {
-//vpx_codec_iface_t* id(void) { return &id##_algo; } 
-  window[id+'_algo']=create_obj_vals_from_array(vpx_codec_iface_t,arr);
+	window[id+'_algo']=create_obj_vals_from_array(vpx_codec_iface_t,arr);
 }
 
 var VPX_CODEC_INTERNAL_ABI_VERSION = (3); /**<\hideinitializer*/
@@ -274,50 +220,45 @@ var VPX_CODEC_CAP_DECODER = 0x1; /**< Is a decoder */
 
 var vpx_codec_ctrl_fn_map_t = function()
 {
-    this.ctrl_id=int_,
-    this.fn=0//'todo:findfuction:vpx_codec_control_fn_t'
+	this.ctrl_id=int_,
+	this.fn=0//'todo:findfuction:vpx_codec_control_fn_t'
 } ;
 
-/*!\brief Decoder algorithm interface interface 285
- *
- * All decoders \ref MUST expose a variable of this type.
- */
 var vpx_codec_iface = function()
 {
-    this.name=char_,        /**< Identification String  */	//*name
-    this.abi_version=int_, /**< Implemented ABI version */
-    this.caps=long_,//todo //vpx_codec_caps_t,  sollte erst inialisiert werden wenn variable verf?gbar //typedef long  /**< Decoder capabilities */
-    this.init='vpx_codec_init_fn_t',    /**< \copydoc ::vpx_codec_init_fn_t */
-    this.destroy='vpx_codec_destroy_fn_t',     /**< \copydoc ::vpx_codec_destroy_fn_t */
-    this.ctrl_maps=new vpx_codec_ctrl_fn_map_t(),   /**< \copydoc ::vpx_codec_ctrl_fn_map_t */
-    this.get_mmap='vpx_codec_get_mmap_fn_t',    /**< \copydoc ::vpx_codec_get_mmap_fn_t */
-    this.set_mmap='vpx_codec_set_mmap_fn_t',    /**< \copydoc ::vpx_codec_set_mmap_fn_t */
-    this.dec=new Object(
-    {
-        peek_si:'vpx_codec_peek_si_fn_t',     /**< \copydoc ::vpx_codec_peek_si_fn_t */
-        get_si:'vpx_codec_get_si_fn_t',      /**< \copydoc ::vpx_codec_peek_si_fn_t */
-        decode:'vpx_codec_decode_fn_t',      /**< \copydoc ::vpx_codec_decode_fn_t */
-        get_frame:'vpx_codec_get_frame_fn_t'   /**< \copydoc ::vpx_codec_get_frame_fn_t */
-    })
+	this.name=char_;        /**< Identification String  */
+	this.abi_version=int_; /**< Implemented ABI version */
+	this.caps=long_,
+	this.init='vpx_codec_init_fn_t';    /**< \copydoc ::vpx_codec_init_fn_t */
+	this.destroy='vpx_codec_destroy_fn_t';     /**< \copydoc ::vpx_codec_destroy_fn_t */
+	this.ctrl_maps=new vpx_codec_ctrl_fn_map_t();   /**< \copydoc ::vpx_codec_ctrl_fn_map_t */
+	this.get_mmap='vpx_codec_get_mmap_fn_t';    /**< \copydoc ::vpx_codec_get_mmap_fn_t */
+	this.set_mmap='vpx_codec_set_mmap_fn_t';    /**< \copydoc ::vpx_codec_set_mmap_fn_t */
+	this.dec=new Object({
+		peek_si:'vpx_codec_peek_si_fn_t',     /**< \copydoc ::vpx_codec_peek_si_fn_t */
+		get_si:'vpx_codec_get_si_fn_t',      /**< \copydoc ::vpx_codec_peek_si_fn_t */
+		decode:'vpx_codec_decode_fn_t',      /**< \copydoc ::vpx_codec_decode_fn_t */
+		get_frame:'vpx_codec_get_frame_fn_t'   /**< \copydoc ::vpx_codec_get_frame_fn_t */
+	});
 };
 
-    var vpx_codec_iface_t=vpx_codec_iface;
+var vpx_codec_iface_t=vpx_codec_iface;
 
 var VERSION_STRING      = " v0.9.7";
 
-        var VPX_CODEC_OK=0,
-        VPX_CODEC_MEM_ERROR=2;//,
+var VPX_CODEC_OK=0,
+	VPX_CODEC_MEM_ERROR=2;//,
 
 
 
-    /*!\brief Current ABI version number 23
-     *
-     * \internal
-     * If this file is altered in any way that changes the ABI, this value
-     * must be bumped.  Examples include, but are not limited to, changing
-     * types, removing or reassigning enums, adding/removing/rearranging
-     * fields to structures
-     */
+/*!\brief Current ABI version number 23
+*
+* \internal
+* If this file is altered in any way that changes the ABI, this value
+* must be bumped.  Examples include, but are not limited to, changing
+* types, removing or reassigning enums, adding/removing/rearranging
+* fields to structures
+*/
 var VPX_IMAGE_ABI_VERSION =(1); /**<\hideinitializer*/
 
 //56
@@ -325,8 +266,8 @@ VPX_IMG_FMT_I420    = 258;// todo:VPX_IMG_FMT_I420    = VPX_IMG_FMT_PLANAR | 2,
 //58
 VPX_IMG_FMT_VPXI420 = 260;// todo:VPX_IMG_FMT_VPXI420 = VPX_IMG_FMT_PLANAR | 4
 
-    /**\brief Image Descriptor */
-        /* Image data pointers. */
+/**\brief Image Descriptor */
+/* Image data pointers. */
 var VPX_PLANE_PACKED = 0;   /**< To be used for all packed formats */
 var VPX_PLANE_Y      = 0;   /**< Y (Luminance) plane */
 var VPX_PLANE_U      = 1;   /**< U (Chroma) plane */
@@ -339,46 +280,44 @@ var  PLANE_U          = VPX_PLANE_U;
 var  PLANE_V          = VPX_PLANE_V;
 var  PLANE_ALPHA      = VPX_PLANE_ALPHA;
 //#endif
-    var vpx_image_t = function() //vpx_image
-    {
-        this.fmt=0, //enum /**< Image Format */'vpx_img_fmt_t'
 
-        /* Image storage dimensions */
-        this.w=this["w"]=int_,   /**< Stored image width */
-        this.h=this["h"]=int_,   /**< Stored image height */
+var vpx_image_t = function() { //vpx_image
+	this.fmt=0, //enum /**< Image Format */'vpx_img_fmt_t'
 
-        /* Image display dimensions */
-        this.d_w=this["d_w"]=int_,   /**< Displayed image width */
-        this.d_h=this["d_h"]=int_,   /**< Displayed image height */
+	/* Image storage dimensions */
+	this.w=this["w"]=int_;   /**< Stored image width */
+	this.h=this["h"]=int_;   /**< Stored image height */
 
-        /* Chroma subsampling info */
-        this.x_chroma_shift=this["x_chroma_shift"]=int_,   /**< subsampling order, X */
-        this.y_chroma_shift=this["y_chroma_shift"]=int_,   /**< subsampling order, Y */
+	/* Image display dimensions */
+	this.d_w=this["d_w"]=int_;   /**< Displayed image width */
+	this.d_h=this["d_h"]=int_;   /**< Displayed image height */
 
-        this.planes=this["planes"]=new Array(4),/*,char),*/ this.planes_off=this["planes_off"]=new Array(4),//,char),//unsigned char *planes[4];  /**< pointer to the top left pixel for each plane */
-        this.stride=this["stride"]=new Array(4),//,int_),  /**< stride between rows for each plane */
+	/* Chroma subsampling info */
+	this.x_chroma_shift=this["x_chroma_shift"]=int_;   /**< subsampling order, X */
+	this.y_chroma_shift=this["y_chroma_shift"]=int_;   /**< subsampling order, Y */
 
-        this.bps=this["bps"]=int_, /**< bits per sample (for packed formats) */
+	this.planes=this["planes"]=new Array(4); /*,char),*/ 
+	this.planes_off=this["planes_off"]=new Array(4); /**< pointer to the top left pixel for each plane */
+	this.stride=this["stride"]=new Array(4); /**< stride between rows for each plane */
 
-        /* The following member may be set by the application to associate data
-         * with this image.
-         */
-        this.user_priv=this["user_priv"]=void_, /* /**< may be set by the application to associate data 
-                         *   with this image. */
+	this.bps=this["bps"]=int_; /**< bits per sample (for packed formats) */
 
-        /* The following members should be treated as private. */
-        this.img_data=this["img_data"]=char_,       /**< private */
-        this.img_data_off=this["img_data_off"]=0,       /**< private */
-        this.img_data_owner=this["img_data_owner"]=int_, /**< private */
-        this.self_allocd=this["self_allocd"]=int_     /**< private */
-    } ; /**< alias for struct vpx_image */
+	/* The following member may be set by the application to associate data
+	 * with this image.
+	 */
+	this.user_priv=this["user_priv"]=void_;
 
+	/* The following members should be treated as private. */
+	this.img_data=this["img_data"]=char_;       /**< private */
+	this.img_data_off=this["img_data_off"]=0;       /**< private */
+	this.img_data_owner=this["img_data_owner"]=int_; /**< private */
+	this.self_allocd=this["self_allocd"]=int_;     /**< private */
+}; /**< alias for struct vpx_image */
 
 
 
 /** @file 62
-    The <tt>libnestegg</tt> C API. */
-
+	The <tt>libnestegg</tt> C API. */
 var NESTEGG_TRACK_VIDEO = 0; /**< Track is of type video. */
 var NESTEGG_TRACK_AUDIO = 1; /**< Track is of type audio. */
 
@@ -399,53 +338,48 @@ var NESTEGG_LOG_CRITICAL = 10000; /**< Critical level log message. */
 
 /** User supplied IO context. 84 */
 var nestegg_io = function(){
-  /** User supplied read callback.
+	/* User supplied read callback.
       @param buffer   Buffer to read data into.
       @param length   Length of supplied buffer in bytes.
       @param userdata The #userdata supplied by the user.
       @retval  1 Read succeeded.
       @retval  0 End of stream.
       @retval -1 Error. */
-  //int (* read)(void * buffer, size_t length, void * userdata);
-  this.read=int_,
+	this.read=int_;
 
-  /** User supplied seek callback.
+	/** User supplied seek callback.
       @param offset   Offset within the stream to seek to.
       @param whence   Seek direction.  One of #NESTEGG_SEEK_SET,
                       #NESTEGG_SEEK_CUR, or #NESTEGG_SEEK_END.
       @param userdata The #userdata supplied by the user.
       @retval  0 Seek succeeded.
       @retval -1 Error. */
-  //int (* seek)(int64_t offset, int whence, void * userdata);
-  this.seek=int_,
+	//int (* seek)(int64_t offset, int whence, void * userdata);
+	this.seek=int_;
 
-  /** User supplied tell callback.
+	/** User supplied tell callback.
       @param userdata The #userdata supplied by the user.
       @returns Current position within the stream.
       @retval -1 Error. */
-  //int64_t (* tell)(void * userdata);
-  this.tell=int64_t,
+	//int64_t (* tell)(void * userdata);
+	this.tell=int64_t;
 
-  /** User supplied pointer to be passed to the IO callbacks. */
-  //void * userdata;
-
-
-  this.userdata=void_ //*
-} ;
+	/** User supplied pointer to be passed to the IO callbacks. */
+	//void * userdata;
+	this.userdata=void_;
+};
 
 /** Parameters specific to a video track. */
 var nestegg_video_params = function(){
-  this.width=int_,          /**< Width of the video frame in pixels. */
-  this.height=int_,         /**< Height of the video frame in pixels. */
-  this.display_width=int_,  /**< Display width of the video frame in pixels. */
-  this.display_height=int_, /**< Display height of the video frame in pixels. */
-  this.crop_bottom=int_,    /**< Pixels to crop from the bottom of the frame. */
-  this.crop_top=int_,       /**< Pixels to crop from the top of the frame. */
-  this.crop_left=int_,      /**< Pixels to crop from the left of the frame. */
-  this.crop_right=int_     /**< Pixels to crop from the right of the frame. */
-} ;
-
-
+	this.width=int_;          /**< Width of the video frame in pixels. */
+	this.height=int_;         /**< Height of the video frame in pixels. */
+	this.display_width=int_;  /**< Display width of the video frame in pixels. */
+	this.display_height=int_; /**< Display height of the video frame in pixels. */
+	this.crop_bottom=int_;    /**< Pixels to crop from the bottom of the frame. */
+	this.crop_top=int_;       /**< Pixels to crop from the top of the frame. */
+	this.crop_left=int_;      /**< Pixels to crop from the left of the frame. */
+	this.crop_right=int_;     /**< Pixels to crop from the right of the frame. */
+};
 
 
 /* EBML Elements 14 */
@@ -528,16 +462,14 @@ var ID_CUE_CLUSTER_POSITION=0xf1;
 var ID_CUE_BLOCK_NUMBER   = 0x5378;
 
 /* EBML Types 93 */
-var //ebml_type_enum = {
+var 
   TYPE_UNKNOWN=0,
   TYPE_MASTER=1,
   TYPE_UINT=2,
   TYPE_FLOAT=3,
   TYPE_INT=4,
   TYPE_STRING=5,
-  TYPE_BINARY=6
-//}
-;
+  TYPE_BINARY=6;
 
 var LIMIT_STRING            = (1 << 20);
 var LIMIT_BINARY            = (1 << 24);
@@ -567,316 +499,322 @@ var TRACK_TYPE_AUDIO        = 2;
 var TRACK_ID_VP8            = "V_VP8";
 var TRACK_ID_VORBIS         = "A_VORBIS";
 
-var// vint_mask {
+var
   MASK_NONE=0,
-  MASK_FIRST_BIT=1
-//}
-;
+  MASK_FIRST_BIT=1;
 
 //137
 var ebml_binary = function(){
-  this.data=char_,//*
-  this.length=size_t
+	this.data=char_;
+	this.length=size_t;
 };
 
 var ebml_list_node = function(){
-  this.next=null,//'ebml_list_node',//*
-  this.id=uint64_t,
-  this.data=void_//*
+	this.next=null; //'ebml_list_node',//*
+	this.id=uint64_t;
+	this.data=void_;
 };
 
 var ebml_list = function(){
-  this.head=null,//'newObjectI(ebml_list_node)',//*
-  this.tail=null//'newObjectI(ebml_list_node)'//*
+	this.head=null; //'newObjectI(ebml_list_node)',//*
+	this.tail=null; //'newObjectI(ebml_list_node)'//*
 };
 
 var ebml_type = function(){
-  this.v=new Object({//union ebml_value
-    u:uint64_t,
-    f:double_,
-    i:int64_t,
-    s:char_,//*
-    b:new ebml_binary()
-  }),
-  this.type=0, //enum'ebml_type_enum'
-  this.read=int_
+	this.v=new Object({ //union ebml_value
+		u:uint64_t,
+		f:double_,
+		i:int64_t,
+		s:char_,//*
+		b:new ebml_binary()
+	});
+	this.type=0; //enum'ebml_type_enum'
+	this.read=int_;
 };
 
 /* EBML Definitions 165 */
 var ebml = window["ebml"] = function(){
-  this.ebml_version=this["ebml_version"]=new ebml_type(),
-  this.ebml_read_version=this["ebml_read_version"]=new ebml_type(),
-  this.ebml_max_id_length=this["ebml_max_id_length"]=new ebml_type(),
-  this.ebml_max_size_length=this["ebml_max_size_length"]=new ebml_type(),
-  this.doctype=this["doctype"]=new ebml_type(),
-  this.doctype_version=this["doctype_version"]=new ebml_type(),
-  this.doctype_read_version=this["doctype_read_version"]=new ebml_type()
+	this.ebml_version=this["ebml_version"]=new ebml_type();
+	this.ebml_read_version=this["ebml_read_version"]=new ebml_type();
+	this.ebml_max_id_length=this["ebml_max_id_length"]=new ebml_type();
+	this.ebml_max_size_length=this["ebml_max_size_length"]=new ebml_type();
+	this.doctype=this["doctype"]=new ebml_type();
+	this.doctype_version=this["doctype_version"]=new ebml_type();
+	this.doctype_read_version=this["doctype_read_version"]=new ebml_type();
 };
 
 /* Matroksa Definitions */
 var seek = window["seek"] = function(){
-  this.id=this["id"]=new ebml_type(),
-  this.position=this["position"]=new ebml_type()
+	this.id=this["id"]=new ebml_type();
+	this.position=this["position"]=new ebml_type();
 };
 
 var seek_head = window["seek_head"] = function(){
-  this.seek=this["seek"]=new ebml_list()
+	this.seek=this["seek"]=new ebml_list();
 };
 
 var info = window["info"] = function(){
-  this.timecode_scale=this["timecode_scale"]=new ebml_type(),
-  this.duration=this["duration"]=new ebml_type()
+	this.timecode_scale=this["timecode_scale"]=new ebml_type();
+	this.duration=this["duration"]=new ebml_type();
 };
 
 var block_group = window["block_group"] = function(){
-  this.duration=this["duration"]=new ebml_type(),
-  this.reference_block=this["reference_block"]=new ebml_type()
+	this.duration=this["duration"]=new ebml_type();
+	this.reference_block=this["reference_block"]=new ebml_type();
 };
 
 var cluster = window["cluster"] = function(){
-  this.timecode=this["timecode"]=new ebml_type(),
-  this.block_group=this["block_group"]=new ebml_list()
+	this.timecode=this["timecode"]=new ebml_type();
+	this.block_group=this["block_group"]=new ebml_list();
 };
 
 var video = window["video"] = function(){
-  this.pixel_width=this["pixel_width"]=new ebml_type(),
-  this.pixel_height=this["pixel_height"]=new ebml_type(),
-  this.pixel_crop_bottom=this["pixel_crop_bottom"]=new ebml_type(),
-  this.pixel_crop_top=this["pixel_crop_top"]=new ebml_type(),
-  this.pixel_crop_left=this["pixel_crop_left"]=new ebml_type(),
-  this.pixel_crop_right=this["pixel_crop_right"]=new ebml_type(),
-  this.display_width=this["display_width"]=new ebml_type(),
-  this.display_height=this["display_height"]=new ebml_type()
+	this.pixel_width=this["pixel_width"]=new ebml_type();
+	this.pixel_height=this["pixel_height"]=new ebml_type();
+	this.pixel_crop_bottom=this["pixel_crop_bottom"]=new ebml_type();
+	this.pixel_crop_top=this["pixel_crop_top"]=new ebml_type();
+	this.pixel_crop_left=this["pixel_crop_left"]=new ebml_type();
+	this.pixel_crop_right=this["pixel_crop_right"]=new ebml_type();
+	this.display_width=this["display_width"]=new ebml_type();
+	this.display_height=this["display_height"]=new ebml_type();
 };
 
 var audio = window["audio"] = function(){
-  this.sampling_frequency=this["sampling_frequency"]=new ebml_type(),
-  this.channels=this["channels"]=new ebml_type(),
-  this.bit_depth=this["bit_depth"]=new ebml_type()
+	this.sampling_frequency=this["sampling_frequency"]=new ebml_type();
+	this.channels=this["channels"]=new ebml_type();
+	this.bit_depth=this["bit_depth"]=new ebml_type();
 };
 
 var track_entry = window["track_entry"] = function(){
-  this.number=this["number"]=new ebml_type(),
-  this.uid=this["uid"]=new ebml_type(),
-  this.type=this["type"]=new ebml_type(),
-  this.flag_enabled=this["flag_enabled"]=new ebml_type(),
-  this.flag_default=this["flag_default"]=new ebml_type(),
-  this.flag_lacing=this["flag_lacing"]=new ebml_type(),
-  this.track_timecode_scale=this["track_timecode_scale"]=new ebml_type(),
-  this.language=this["language"]=new ebml_type(),
-  this.codec_id=this["codec_id"]=new ebml_type(),
-  this.codec_private=this["codec_private"]=new ebml_type(),
-  this.video=this["video"]=new video(),
-  this.audio=this["audio"]=new audio()
+	this.number=this["number"]=new ebml_type();
+	this.uid=this["uid"]=new ebml_type();
+	this.type=this["type"]=new ebml_type();
+	this.flag_enabled=this["flag_enabled"]=new ebml_type();
+	this.flag_default=this["flag_default"]=new ebml_type();
+	this.flag_lacing=this["flag_lacing"]=new ebml_type();
+	this.track_timecode_scale=this["track_timecode_scale"]=new ebml_type();
+	this.language=this["language"]=new ebml_type();
+	this.codec_id=this["codec_id"]=new ebml_type();
+	this.codec_private=this["codec_private"]=new ebml_type();
+	this.video=this["video"]=new video();
+	this.audio=this["audio"]=new audio();
 };
 
 var tracks = window["tracks"] = function(){
-  this.track_entry=this["track_entry"]=new ebml_list()
+	this.track_entry=this["track_entry"]=new ebml_list();
 };
 
 var cue_track_positions = window["cue_track_positions"] = function(){
-  this.track=this["track"]=new ebml_type(),
-  this.cluster_position=this["cluster_position"]=new ebml_type(),
-  this.block_number=this["block_number"]=new ebml_type()
+	this.track=this["track"]=new ebml_type();
+	this.cluster_position=this["cluster_position"]=new ebml_type();
+	this.block_number=this["block_number"]=new ebml_type();
 };
 
 var cue_point = window["cue_point"] = function(){
-  this.time=this["time"]=new ebml_type(),
-  this.cue_track_positions=this["cue_track_positions"]=new ebml_list()
+	this.time=this["time"]=new ebml_type();
+	this.cue_track_positions=this["cue_track_positions"]=new ebml_list();
 };
 
 var cues = window["cues"] = function(){
-  this.cue_point=this["cue_point"]=new ebml_list()
+	this.cue_point=this["cue_point"]=new ebml_list();
 };
 
 var segment = window["segment"] = function(){
-  this.seek_head=this["seek_head"]=new ebml_list(),
-  this.info=this["info"]=new info(),
-  this.cluster=this["cluster"]=new ebml_list(),
-  this.tracks=this["tracks"]=new tracks(),
-  this.cues=this["cues"]=new cues()
+	this.seek_head=this["seek_head"]=new ebml_list();
+	this.info=this["info"]=new info();
+	this.cluster=this["cluster"]=new ebml_list();
+	this.tracks=this["tracks"]=new tracks();
+	this.cues=this["cues"]=new cues();
 };
 
 /* Misc. 260 */
 var pool_ctx = function(){
-   this.dummy=char_
+	this.dummy=char_;
 };
 
 var list_node = function(){
-  this.previous=0, //todo: endlosschleife verhindern //*'list_node'
-  this.node=new ebml_element_desc(),//*
-  this.data=char_ //*
+	this.previous=0; //todo: endlosschleife verhindern //*'list_node'
+	this.node=new ebml_element_desc();
+	this.data=char_;
 };
 
 var frame = function() {
-  this.data=char_,
-  this.length=size_t,
-  this.next=null//'frame'
+	this.data=char_;
+	this.length=size_t;
+	this.next=null; //'frame'
 };
 
 /* Public (opaque) Structures 284 */
 var nestegg = function(){
-  this.io=new nestegg_io(), //*
-  this.log_=0,//'nestegg_log' todo:
-  this.alloc_pool=new pool_ctx(), //*
-  this.last_id=uint64_t,
-  this.last_size=uint64_t,
-  this.ancestor=null,//'newObjectI(list_node)',//*
-  this.ebml=this["ebml"]=new ebml(),
-  this.segment=this["segment"]=new segment(),
-  this.segment_offset=int64_t,
-  this.track_count=int_
+	this.io=new nestegg_io();
+	this.log_=0; //'nestegg_log' todo:
+	this.alloc_pool=new pool_ctx();
+	this.last_id=uint64_t;
+	this.last_size=uint64_t;
+	this.ancestor=null; //'newObjectI(list_node)',
+	this.ebml=this["ebml"]=new ebml();
+	this.segment=this["segment"]=new segment();
+	this.segment_offset=int64_t;
+	this.track_count=int_;
 };
 
 var nestegg_packet = function() {
-  this.track=uint64_t,
-  this.timecode=uint64_t,
-  this.frame=new frame()//*
+	this.track=uint64_t;
+	this.timecode=uint64_t;
+	this.frame=new frame();
 };
 
 /* Element Descriptor 304 */
 var ebml_element_desc = function(){
-  this.name=char_,//const *
-  this.id=uint64_t,
-  this.type=0, //enum'ebml_type_enum'
-  this.offset=size_t,
-  this.flags=int_,
-  this.children=null,//wiederholungsschleife //*'ebml_element_desc'
-  this.size=size_t,
-  this.data_offset=size_t
+	this.name=char_; //const 
+	this.id=uint64_t;
+	this.type=0; //enum'ebml_type_enum'
+	this.offset=size_t;
+	this.flags=int_;
+	this.children=null; //wiederholungsschleife //*'ebml_element_desc'
+	this.size=size_t;
+	this.data_offset=size_t;
 };
 
 function E_FIELD(ID, _ID, TYPE, STRUCT, FIELD) {
-  return new Array( ID, _ID, TYPE, FIELD/*offsetof(STRUCT, FIELD)*/, DESC_FLAG_NONE, null, 0, 0 ) }
+	return new Array( ID, _ID, TYPE, FIELD, DESC_FLAG_NONE, null, 0, 0 );
+}
 function E_MASTER(ID, _ID, TYPE, STRUCT, FIELD, NE_FIELD_ELEMENTS) {
-  return new Array( ID, _ID, TYPE, FIELD/*offsetof(STRUCT, FIELD)*/, DESC_FLAG_MULTI, NE_FIELD_ELEMENTS,
-      1/*sizeof(FIELD)*/, 0 ) }
+	return new Array( ID, _ID, TYPE, FIELD, DESC_FLAG_MULTI, NE_FIELD_ELEMENTS, 1, 0 );
+}
 function E_SINGLE_MASTER_O(ID, _ID, TYPE, STRUCT, FIELD, NE_FIELD_ELEMENTS) {
-  return new Array( ID, _ID, TYPE, FIELD/*offsetof(STRUCT, FIELD)*/, DESC_FLAG_OFFSET, NE_FIELD_ELEMENTS, 0,
-      FIELD+'_offset'/*offsetof(STRUCT, FIELD+'_offset')*/ ) }
+	return new Array( ID, _ID, TYPE, FIELD, DESC_FLAG_OFFSET, NE_FIELD_ELEMENTS, 0, 
+		FIELD+'_offset');
+}
 function E_SINGLE_MASTER(ID, _ID, TYPE, STRUCT, FIELD, NE_FIELD_ELEMENTS) {
-  return new Array( ID, _ID, TYPE, FIELD/*offsetof(STRUCT, FIELD)*/, DESC_FLAG_NONE, NE_FIELD_ELEMENTS, 0, 0 ) }
+	return new Array( ID, _ID, TYPE, FIELD, DESC_FLAG_NONE, NE_FIELD_ELEMENTS, 0, 0 );
+}
 function E_SUSPEND(ID, _ID, TYPE) {
-  return new Array( ID, _ID, TYPE, 0, DESC_FLAG_SUSPEND, null, 0, 0 ) }
-var E_LAST =
-  new Array( null, 0, 0, 0, DESC_FLAG_NONE, null, 0, 0 );
+	return new Array( ID, _ID, TYPE, 0, DESC_FLAG_SUSPEND, null, 0, 0 );
+}
+var E_LAST = new Array( null, 0, 0, 0, DESC_FLAG_NONE, null, 0, 0 );
 
 /* EBML Element Lists */
 var ne_ebml_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_EBML_VERSION', ID_EBML_VERSION, TYPE_UINT, 'ebml', 'ebml_version'),
-  E_FIELD('ID_EBML_READ_VERSION', ID_EBML_READ_VERSION, TYPE_UINT, 'ebml', 'ebml_read_version'),
-  E_FIELD('ID_EBML_MAX_ID_LENGTH', ID_EBML_MAX_ID_LENGTH, TYPE_UINT, 'ebml', 'ebml_max_id_length'),
-  E_FIELD('ID_EBML_MAX_SIZE_LENGTH', ID_EBML_MAX_SIZE_LENGTH, TYPE_UINT, 'ebml', 'ebml_max_size_length'),
-  E_FIELD('ID_DOCTYPE', ID_DOCTYPE, TYPE_STRING, 'ebml', 'doctype'),
-  E_FIELD('ID_DOCTYPE_VERSION', ID_DOCTYPE_VERSION, TYPE_UINT, 'ebml', 'doctype_version'),
-  E_FIELD('ID_DOCTYPE_READ_VERSION', ID_DOCTYPE_READ_VERSION, TYPE_UINT, 'ebml', 'doctype_read_version'),
-  E_LAST
+	E_FIELD('ID_EBML_VERSION', ID_EBML_VERSION, TYPE_UINT, 'ebml', 'ebml_version'),
+	E_FIELD('ID_EBML_READ_VERSION', ID_EBML_READ_VERSION, TYPE_UINT, 'ebml', 'ebml_read_version'),
+	E_FIELD('ID_EBML_MAX_ID_LENGTH', ID_EBML_MAX_ID_LENGTH, TYPE_UINT, 'ebml', 'ebml_max_id_length'),
+	E_FIELD('ID_EBML_MAX_SIZE_LENGTH', ID_EBML_MAX_SIZE_LENGTH, TYPE_UINT, 'ebml', 'ebml_max_size_length'),
+	E_FIELD('ID_DOCTYPE', ID_DOCTYPE, TYPE_STRING, 'ebml', 'doctype'),
+	E_FIELD('ID_DOCTYPE_VERSION', ID_DOCTYPE_VERSION, TYPE_UINT, 'ebml', 'doctype_version'),
+	E_FIELD('ID_DOCTYPE_READ_VERSION', ID_DOCTYPE_READ_VERSION, TYPE_UINT, 'ebml', 'doctype_read_version'),
+	E_LAST
 ));
 
 /* WebMedia Element Lists */
 var ne_seek_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_SEEK_ID', ID_SEEK_ID, TYPE_BINARY, 'seek', 'id'),
-  E_FIELD('ID_SEEK_POSITION', ID_SEEK_POSITION, TYPE_UINT, 'seek', 'position'),
-  E_LAST
+	E_FIELD('ID_SEEK_ID', ID_SEEK_ID, TYPE_BINARY, 'seek', 'id'),
+	E_FIELD('ID_SEEK_POSITION', ID_SEEK_POSITION, TYPE_UINT, 'seek', 'position'),
+	E_LAST
 ));
 
 var ne_seek_head_elements = create_ebml_element_desc(new Array(
-  E_MASTER('ID_SEEK', ID_SEEK, TYPE_MASTER, 'seek_head', 'seek', ne_seek_elements),
-  E_LAST
+	E_MASTER('ID_SEEK', ID_SEEK, TYPE_MASTER, 'seek_head', 'seek', ne_seek_elements),
+	E_LAST
 ));
 
 var ne_info_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_TIMECODE_SCALE', ID_TIMECODE_SCALE, TYPE_UINT, 'info', 'timecode_scale'),
-  E_FIELD('ID_DURATION', ID_DURATION, TYPE_FLOAT, 'info', 'duration'),
-  E_LAST
+	E_FIELD('ID_TIMECODE_SCALE', ID_TIMECODE_SCALE, TYPE_UINT, 'info', 'timecode_scale'),
+	E_FIELD('ID_DURATION', ID_DURATION, TYPE_FLOAT, 'info', 'duration'),
+	E_LAST
 ));
 
 var ne_block_group_elements = create_ebml_element_desc(new Array(
-  E_SUSPEND('ID_BLOCK', ID_BLOCK, TYPE_BINARY),
-  E_FIELD('ID_BLOCK_DURATION', ID_BLOCK_DURATION, TYPE_UINT, 'block_group', 'duration'),
-  E_FIELD('ID_REFERENCE_BLOCK', ID_REFERENCE_BLOCK, TYPE_INT, 'block_group', 'reference_block'),
-  E_LAST
+	E_SUSPEND('ID_BLOCK', ID_BLOCK, TYPE_BINARY),
+	E_FIELD('ID_BLOCK_DURATION', ID_BLOCK_DURATION, TYPE_UINT, 'block_group', 'duration'),
+	E_FIELD('ID_REFERENCE_BLOCK', ID_REFERENCE_BLOCK, TYPE_INT, 'block_group', 'reference_block'),
+	E_LAST
 ));
 
 var ne_cluster_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_TIMECODE', ID_TIMECODE, TYPE_UINT, 'cluster', 'timecode'),
-  E_MASTER('ID_BLOCK_GROUP', ID_BLOCK_GROUP, TYPE_MASTER, 'cluster', 'block_group', ne_block_group_elements),
-  E_SUSPEND('ID_SIMPLE_BLOCK', ID_SIMPLE_BLOCK, TYPE_BINARY),
-  E_LAST
+	E_FIELD('ID_TIMECODE', ID_TIMECODE, TYPE_UINT, 'cluster', 'timecode'),
+	E_MASTER('ID_BLOCK_GROUP', ID_BLOCK_GROUP, TYPE_MASTER, 'cluster', 
+		'block_group', ne_block_group_elements),
+	E_SUSPEND('ID_SIMPLE_BLOCK', ID_SIMPLE_BLOCK, TYPE_BINARY),
+	E_LAST
 ));
 
 var ne_video_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_PIXEL_WIDTH', ID_PIXEL_WIDTH, TYPE_UINT, 'video', 'pixel_width'),
-  E_FIELD('ID_PIXEL_HEIGHT', ID_PIXEL_HEIGHT, TYPE_UINT, 'video', 'pixel_height'),
-  E_FIELD('ID_PIXEL_CROP_BOTTOM', ID_PIXEL_CROP_BOTTOM, TYPE_UINT, 'video', 'pixel_crop_bottom'),
-  E_FIELD('ID_PIXEL_CROP_TOP', ID_PIXEL_CROP_TOP, TYPE_UINT, 'video', 'pixel_crop_top'),
-  E_FIELD('ID_PIXEL_CROP_LEFT', ID_PIXEL_CROP_LEFT, TYPE_UINT, 'video', 'pixel_crop_left'),
-  E_FIELD('ID_PIXEL_CROP_RIGHT', ID_PIXEL_CROP_RIGHT, TYPE_UINT, 'video', 'pixel_crop_right'),
-  E_FIELD('ID_DISPLAY_WIDTH', ID_DISPLAY_WIDTH, TYPE_UINT, 'video', 'display_width'),
-  E_FIELD('ID_DISPLAY_HEIGHT', ID_DISPLAY_HEIGHT, TYPE_UINT, 'video', 'display_height'),
-  E_LAST
+	E_FIELD('ID_PIXEL_WIDTH', ID_PIXEL_WIDTH, TYPE_UINT, 'video', 'pixel_width'),
+	E_FIELD('ID_PIXEL_HEIGHT', ID_PIXEL_HEIGHT, TYPE_UINT, 'video', 'pixel_height'),
+	E_FIELD('ID_PIXEL_CROP_BOTTOM', ID_PIXEL_CROP_BOTTOM, TYPE_UINT, 'video', 'pixel_crop_bottom'),
+	E_FIELD('ID_PIXEL_CROP_TOP', ID_PIXEL_CROP_TOP, TYPE_UINT, 'video', 'pixel_crop_top'),
+	E_FIELD('ID_PIXEL_CROP_LEFT', ID_PIXEL_CROP_LEFT, TYPE_UINT, 'video', 'pixel_crop_left'),
+	E_FIELD('ID_PIXEL_CROP_RIGHT', ID_PIXEL_CROP_RIGHT, TYPE_UINT, 'video', 'pixel_crop_right'),
+	E_FIELD('ID_DISPLAY_WIDTH', ID_DISPLAY_WIDTH, TYPE_UINT, 'video', 'display_width'),
+	E_FIELD('ID_DISPLAY_HEIGHT', ID_DISPLAY_HEIGHT, TYPE_UINT, 'video', 'display_height'),
+	E_LAST
 ));
 
 var ne_audio_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_SAMPLING_FREQUENCY', ID_SAMPLING_FREQUENCY, TYPE_FLOAT, 'audio', 'sampling_frequency'),
-  E_FIELD('ID_CHANNELS', ID_CHANNELS, TYPE_UINT, 'audio', 'channels'),
-  E_FIELD('ID_BIT_DEPTH', ID_BIT_DEPTH, TYPE_UINT, 'audio', 'bit_depth'),
-  E_LAST
+	E_FIELD('ID_SAMPLING_FREQUENCY', ID_SAMPLING_FREQUENCY, TYPE_FLOAT, 'audio', 'sampling_frequency'),
+	E_FIELD('ID_CHANNELS', ID_CHANNELS, TYPE_UINT, 'audio', 'channels'),
+	E_FIELD('ID_BIT_DEPTH', ID_BIT_DEPTH, TYPE_UINT, 'audio', 'bit_depth'),
+	E_LAST
 ));
 
 var ne_track_entry_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_TRACK_NUMBER', ID_TRACK_NUMBER, TYPE_UINT, 'track_entry', 'number'),
-  E_FIELD('ID_TRACK_UID', ID_TRACK_UID, TYPE_UINT, 'track_entry', 'uid'),
-  E_FIELD('ID_TRACK_TYPE', ID_TRACK_TYPE, TYPE_UINT, 'track_entry', 'type'),
-  E_FIELD('ID_FLAG_ENABLED', ID_FLAG_ENABLED, TYPE_UINT, 'track_entry', 'flag_enabled'),
-  E_FIELD('ID_FLAG_DEFAULT', ID_FLAG_DEFAULT, TYPE_UINT, 'track_entry', 'flag_default'),
-  E_FIELD('ID_FLAG_LACING', ID_FLAG_LACING, TYPE_UINT, 'track_entry', 'flag_lacing'),
-  E_FIELD('ID_TRACK_TIMECODE_SCALE', ID_TRACK_TIMECODE_SCALE, TYPE_FLOAT, 'track_entry', 'track_timecode_scale'),
-  E_FIELD('ID_LANGUAGE', ID_LANGUAGE, TYPE_STRING, 'track_entry', 'language'),
-  E_FIELD('ID_CODEC_ID', ID_CODEC_ID, TYPE_STRING, 'track_entry', 'codec_id'),
-  E_FIELD('ID_CODEC_PRIVATE', ID_CODEC_PRIVATE, TYPE_BINARY, 'track_entry', 'codec_private'),
-  E_SINGLE_MASTER('ID_VIDEO', ID_VIDEO, TYPE_MASTER, 'track_entry', 'video', ne_video_elements),
-  E_SINGLE_MASTER('ID_AUDIO', ID_AUDIO, TYPE_MASTER, 'track_entry', 'audio', ne_audio_elements),
-  E_LAST
+	E_FIELD('ID_TRACK_NUMBER', ID_TRACK_NUMBER, TYPE_UINT, 'track_entry', 'number'),
+	E_FIELD('ID_TRACK_UID', ID_TRACK_UID, TYPE_UINT, 'track_entry', 'uid'),
+	E_FIELD('ID_TRACK_TYPE', ID_TRACK_TYPE, TYPE_UINT, 'track_entry', 'type'),
+	E_FIELD('ID_FLAG_ENABLED', ID_FLAG_ENABLED, TYPE_UINT, 'track_entry', 'flag_enabled'),
+	E_FIELD('ID_FLAG_DEFAULT', ID_FLAG_DEFAULT, TYPE_UINT, 'track_entry', 'flag_default'),
+	E_FIELD('ID_FLAG_LACING', ID_FLAG_LACING, TYPE_UINT, 'track_entry', 'flag_lacing'),
+	E_FIELD('ID_TRACK_TIMECODE_SCALE', ID_TRACK_TIMECODE_SCALE, TYPE_FLOAT, 
+		'track_entry', 'track_timecode_scale'),
+	E_FIELD('ID_LANGUAGE', ID_LANGUAGE, TYPE_STRING, 'track_entry', 'language'),
+	E_FIELD('ID_CODEC_ID', ID_CODEC_ID, TYPE_STRING, 'track_entry', 'codec_id'),
+	E_FIELD('ID_CODEC_PRIVATE', ID_CODEC_PRIVATE, TYPE_BINARY, 'track_entry', 'codec_private'),
+	E_SINGLE_MASTER('ID_VIDEO', ID_VIDEO, TYPE_MASTER, 'track_entry', 'video', ne_video_elements),
+	E_SINGLE_MASTER('ID_AUDIO', ID_AUDIO, TYPE_MASTER, 'track_entry', 'audio', ne_audio_elements),
+	E_LAST
 ));
 
 var ne_tracks_elements = create_ebml_element_desc(new Array(
-  E_MASTER('ID_TRACK_ENTRY', ID_TRACK_ENTRY, TYPE_MASTER, 'tracks', 'track_entry', ne_track_entry_elements),
-  E_LAST
+	E_MASTER('ID_TRACK_ENTRY', ID_TRACK_ENTRY, TYPE_MASTER, 'tracks', 
+		'track_entry', ne_track_entry_elements),
+	E_LAST
 ));
 
 var ne_cue_track_positions_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_CUE_TRACK', ID_CUE_TRACK, TYPE_UINT, 'cue_track_positions', 'track'),
-  E_FIELD('ID_CUE_CLUSTER_POSITION', ID_CUE_CLUSTER_POSITION, TYPE_UINT, 'cue_track_positions', 'cluster_position'),
-  E_FIELD('ID_CUE_BLOCK_NUMBER', ID_CUE_BLOCK_NUMBER, TYPE_UINT, 'cue_track_positions', 'block_number'),
-  E_LAST
-))
+	E_FIELD('ID_CUE_TRACK', ID_CUE_TRACK, TYPE_UINT, 'cue_track_positions', 'track'),
+	E_FIELD('ID_CUE_CLUSTER_POSITION', ID_CUE_CLUSTER_POSITION, TYPE_UINT, 
+		'cue_track_positions', 'cluster_position'),
+	E_FIELD('ID_CUE_BLOCK_NUMBER', ID_CUE_BLOCK_NUMBER, TYPE_UINT, 'cue_track_positions', 'block_number'),
+	E_LAST
+));
 
 var ne_cue_point_elements = create_ebml_element_desc(new Array(
-  E_FIELD('ID_CUE_TIME', ID_CUE_TIME, TYPE_UINT, 'cue_point', 'time'),
-  E_MASTER('ID_CUE_TRACK_POSITIONS', ID_CUE_TRACK_POSITIONS, TYPE_MASTER, 'cue_point', 'cue_track_positions', ne_cue_track_positions_elements),
-  E_LAST
+	E_FIELD('ID_CUE_TIME', ID_CUE_TIME, TYPE_UINT, 'cue_point', 'time'),
+	E_MASTER('ID_CUE_TRACK_POSITIONS', ID_CUE_TRACK_POSITIONS, TYPE_MASTER, 
+		'cue_point', 'cue_track_positions', ne_cue_track_positions_elements),
+	E_LAST
 ));
 
 var ne_cues_elements = create_ebml_element_desc(new Array(
-  E_MASTER('ID_CUE_POINT', ID_CUE_POINT, TYPE_MASTER, 'cues', 'cue_point', ne_cue_point_elements),
-  E_LAST
+	E_MASTER('ID_CUE_POINT', ID_CUE_POINT, TYPE_MASTER, 'cues', 'cue_point', ne_cue_point_elements),
+	E_LAST
 ));
 
 var ne_segment_elements = create_ebml_element_desc(new Array(
-  E_MASTER('ID_SEEK_HEAD', ID_SEEK_HEAD, TYPE_MASTER, 'segment', 'seek_head', ne_seek_head_elements),
-  E_SINGLE_MASTER('ID_INFO', ID_INFO, TYPE_MASTER, 'segment', 'info', ne_info_elements),
-  E_MASTER('ID_CLUSTER', ID_CLUSTER, TYPE_MASTER, 'segment', 'cluster', ne_cluster_elements),
-  E_SINGLE_MASTER('ID_TRACKS', ID_TRACKS, TYPE_MASTER, 'segment', 'tracks', ne_tracks_elements),
-  E_SINGLE_MASTER('ID_CUES', ID_CUES, TYPE_MASTER, 'segment', 'cues', ne_cues_elements),
-  E_LAST
+	E_MASTER('ID_SEEK_HEAD', ID_SEEK_HEAD, TYPE_MASTER, 'segment', 'seek_head', ne_seek_head_elements),
+	E_SINGLE_MASTER('ID_INFO', ID_INFO, TYPE_MASTER, 'segment', 'info', ne_info_elements),
+	E_MASTER('ID_CLUSTER', ID_CLUSTER, TYPE_MASTER, 'segment', 'cluster', ne_cluster_elements),
+	E_SINGLE_MASTER('ID_TRACKS', ID_TRACKS, TYPE_MASTER, 'segment', 'tracks', ne_tracks_elements),
+	E_SINGLE_MASTER('ID_CUES', ID_CUES, TYPE_MASTER, 'segment', 'cues', ne_cues_elements),
+	E_LAST
 ));
 
 //442
 var ne_top_level_elements = create_ebml_element_desc(new Array(
-  E_SINGLE_MASTER('ID_EBML', ID_EBML, TYPE_MASTER, 'nestegg', 'ebml', ne_ebml_elements),
-  E_SINGLE_MASTER_O('ID_SEGMENT', ID_SEGMENT, TYPE_MASTER, 'nestegg', 'segment', ne_segment_elements),
-  E_LAST
+	E_SINGLE_MASTER('ID_EBML', ID_EBML, TYPE_MASTER, 'nestegg', 'ebml', ne_ebml_elements),
+	E_SINGLE_MASTER_O('ID_SEGMENT', ID_SEGMENT, TYPE_MASTER, 'nestegg', 'segment', ne_segment_elements),
+	E_LAST
 ));
 
 function create_ebml_element_desc(Arr) {
@@ -884,220 +822,187 @@ function create_ebml_element_desc(Arr) {
 	for(var i=0;i<Arr.length;++i) {
 		var a=0;
 		var createitem = new ebml_element_desc();
-		
+
 		for (var key in createitem)//ebml_element_desc
 			if(Arr[i][a]!=='undefined')
 				createitem[key]=Arr[i][a++];
-				
+
 		newArr.push(createitem);
 	}
 	return newArr;
 }
 //455
 function
-ne_pool_init(void_)
-{
-  var pool=new pool_ctx();//*
-
-  //todo: pool = h_malloc(sizeof(*pool));
-  //if (!pool)
-  //  abort();
-  return pool;
+ne_pool_init(void_) {
+	var pool=new pool_ctx();
+	return pool;
 }
 
 var buffer_8192=Arr(8192,0);
-function //508
-ne_io_read_skip(io, length)
-{
-  var get_=size_t;
-  var buf={val:buffer_8192};//,char_
-  var r = 1;
+//508
+function ne_io_read_skip(io, length) {
+	var get_=size_t;
+	var buf={val:buffer_8192}; //,char_
+	var r = 1;
 
-  while (length > 0) {
-    get_ = length < /*sizeof(buf)**/buf.val.length ? length : /*sizeof(buf)**/buf.val.length;
-    r = ne_io_read(io, buf, get_);
-    if (r != 1)
-      break;
-    length -= get_;
-  }
+	while (length > 0) {
+		get_ = length < buf.val.length ? length : buf.val.length;
+		r = ne_io_read(io, buf, get_);
+		if (r != 1) break;
+		length -= get_;
+	}
 
-  return r;
+	return r;
 }
 
-function //526
-ne_io_tell(io)
-{
+//526
+function ne_io_tell(io) {
   return io.tell(io.userdata);
 }
 
-function
-ne_bare_read_vint(io, value, length, maskflag)
-{
-  var r=int_;
-  var b={val:char_};
-  var maxlen = 8;
-  var count = 1, mask = 1 << 7;
+function ne_bare_read_vint(io, value, length, maskflag) {
+	var r=int_;
+	var b={val:char_};
+	var maxlen = 8;
+	var count = 1, mask = 1 << 7;
 
-  r = ne_io_read(io, b, 1);//&b
-  if (r != 1)
-    return r;
+	r = ne_io_read(io, b, 1);
+	if (r != 1) return r;
 
-  while (count < maxlen) {
-    if ((b.val[0] & mask) != 0)
-      break;
-    mask >>= 1;
-    count += 1;
-  }
+	while (count < maxlen) {
+		if ((b.val[0] & mask) != 0) break;
+		mask >>= 1;
+		count += 1;
+	}
 
-  if (length)
-    length.val = count;
-  value.val = b.val[0];
+	if (length) length.val = count;
+	value.val = b.val[0];
 
-  if (maskflag == MASK_FIRST_BIT)
-    value.val = b.val[0] & ~mask;
+	if (maskflag == MASK_FIRST_BIT)
+		value.val = b.val[0] & ~mask;
 
-  while (--count) {
-    r = ne_io_read(io, b, 1);//&b
-    if (r != 1)
-      return r;
-    value.val <<= 8;
-    value.val |= b.val[0];
-  }
+	while (--count) {
+		r = ne_io_read(io, b, 1);
+		if (r != 1) return r;
+		value.val <<= 8;
+		value.val |= b.val[0];
+	}
 
-  return 1;
+	return 1;
 }
 
-function
-ne_io_read(io, buffer, length)
-{
-  //io.userdata={val:io.userdata};
-  var r = io.read(buffer, length, io.userdata);
-  //io.userdata=io.userdata.val;
-  return r;
+function ne_io_read(io, buffer, length) {
+	//io.userdata={val:io.userdata};
+	var r = io.read(buffer, length, io.userdata);
+	//io.userdata=io.userdata.val;
+	return r;
 }
 
-function //569
-ne_read_id(io, value, length)
-{
-  return ne_bare_read_vint(io, value, length, MASK_NONE);
+//569
+function ne_read_id(io, value, length) {
+	return ne_bare_read_vint(io, value, length, MASK_NONE);
 }
 
-function
-ne_read_vint(io, value, length)
-{
-  return ne_bare_read_vint(io, value, length, MASK_FIRST_BIT);
+function ne_read_vint(io, value, length) {
+	return ne_bare_read_vint(io, value, length, MASK_FIRST_BIT);
 }
 
-function //581
-ne_read_svint(io, value, length)
-{
-  var r=int_;
-  var uvalue=[uint64_t];
-  var ulength=[uint64_t];
-  var svint_subtr = new Array(
-    0x3f, 0x1fff,
-    0xfffff, 0x7ffffff,
-    0x3ffffffff, 0x1ffffffffff,
-    0xffffffffffff, 0x7fffffffffffff
-  );
+//581
+function ne_read_svint(io, value, length) {
+	var r=int_;
+	var uvalue=[uint64_t];
+	var ulength=[uint64_t];
+	var svint_subtr = new Array(
+		0x3f, 0x1fff,
+		0xfffff, 0x7ffffff,
+		0x3ffffffff, 0x1ffffffffff,
+		0xffffffffffff, 0x7fffffffffffff
+	);
 
-  var r = ne_bare_read_vint(io, uvalue, ulength, MASK_FIRST_BIT);
-  if (r != 1)
-    return r;
-  value[0] = uvalue - svint_subtr[ulength - 1];
-  if (length)
-    length[0] = ulength;
-  return r;
+	var r = ne_bare_read_vint(io, uvalue, ulength, MASK_FIRST_BIT);
+	if (r != 1) return r;
+	value[0] = uvalue - svint_subtr[ulength - 1];
+	if (length) length[0] = ulength;
+	return r;
 }
 
-function //603
-ne_read_uint(io, val, length)
-{
-  var b={val:char_};
-  var r=int_;
+//603
+function ne_read_uint(io, val, length) {
+	var b={val:char_};
+	var r=int_;
 
-  if (length == 0 || length > 8)
-    return -1;
-  r = ne_io_read(io, b, 1);
-  if (r != 1)
-    return r;
-  val[0] = b.val[0];//result
-  while (--length) {
-    r = ne_io_read(io, b, 1);
-    if (r != 1)
-      return r;
-    val[0] <<= 8;//result
-    val[0] |= b.val[0];//result
-  }
-  return 1;
+	if (length == 0 || length > 8) return -1;
+	r = ne_io_read(io, b, 1);
+	if (r != 1) return r;
+	val[0] = b.val[0];//result
+	while (--length) {
+		r = ne_io_read(io, b, 1);
+		if (r != 1) return r;
+		val[0] <<= 8;//result
+		val[0] |= b.val[0];//result
+	}
+	return 1;
 }
 
-function //625
-ne_read_int(io, val, length)
-{
-  var r=int_;
-  var uval=[uint64_t], base=uint64_t;
+//625
+function ne_read_int(io, val, length) {
+	var r=int_;
+	var uval=[uint64_t], base=uint64_t;
 
-  r = ne_read_uint(io, uval, length);
-  if (r != 1)
-    return r;
+	r = ne_read_uint(io, uval, length);
+	if (r != 1) return r;
 
-  if (length < /*sizeof(int64_t)**/8) {
-    base = 1;
-    base <<= length * 8 - 1;
-    if (uval >= base) {
-        base = 1;
-        base <<= length * 8;
-    } else {
-      base = 0;
-    }
-    val[0] = uval - base;
-  } else {
-    val[0] = uval;//(int64_t) 
-  }
+	if (length < /*sizeof(int64_t)**/8) {
+		base = 1;
+		base <<= length * 8 - 1;
+		if (uval >= base) {
+			base = 1;
+			base <<= length * 8;
+		} else {
+			base = 0;
+		}
+		val[0] = uval - base;
+	} else {
+		val[0] = uval;//(int64_t) 
+	}
 
-  return 1;
+	return 1;
 }
 
-function //652
-ne_read_float(io, val, length)
-{
-  var value = {//union
-    u:[uint64_t],
-    f:[float_],
-    d:[double_]
-  } ;
-  var r=int_;
+//652
+function ne_read_float(io, val, length) {
+	var value = {//union
+		u:[uint64_t],
+		f:[float_],
+		d:[double_]
+	};
+	var r=int_;
 
-  /* length == 10 not implemented */
-  if (length != 4 && length != 8)
-    return -1;
-  r = ne_read_uint(io, value.u, length);
-  if (r != 1)
-    return r;
-  if (length == 4)
-    val[0] = value.f = value.u;//'u'+
-  else
-    val[0] = value.d = value.u;//'u'+
-  return 1;
+	/* length == 10 not implemented */
+	if (length != 4 && length != 8) return -1;
+	r = ne_read_uint(io, value.u, length);
+	if (r != 1) return r;
+	if (length == 4) val[0] = value.f = value.u;
+	else val[0] = value.d = value.u;
+	return 1;
 }
 
-function //675
-ne_read_string(ctx, val, length)
-{
-  var str={val:char_};//*
-  var r=int_;
+//675
+function ne_read_string(ctx, val, length) {
+	var str={val:char_};
+	var r=int_;
 
-  if (length == 0 || length > LIMIT_STRING)
-    return -1;
-  //str = ne_pool_alloc(length + 1, ctx->alloc_pool);
-  r = ne_io_read(ctx.io, str, length);
-  if (r != 1)
-    return r;
-	var str2='';for(var i=0;i<length;++i)str2 +=String.fromCharCode(str.val[i]);str.val=str2;
-  //str[length] = '\0';//todo: ???
-  val[0] = str.val;
-  return 1;
+	if (length == 0 || length > LIMIT_STRING) return -1;
+	//str = ne_pool_alloc(length + 1, ctx->alloc_pool);
+	r = ne_io_read(ctx.io, str, length);
+	if (r != 1) return r;
+	var str2='';
+	for(var i=0;i<length;++i)
+		str2 +=String.fromCharCode(str.val[i]);
+	str.val=str2;
+ 	//str[length] = '\0';//todo: ???
+	val[0] = str.val;
+	return 1;
 }
 
 function //692
@@ -7799,132 +7704,60 @@ file_is_webm(input,
 //697
 function main(AJAX_response, argc, argv_)
 {
-    var fn              =	null;//char *fn
-    var i               =   int_;
-    var buf 			= [null];	var buf_off=[null];
-    var buf_sz 			= [0], buf_alloc_sz = [0];
-    var infile			= {data:AJAX_response, data_off:0}; //:todo FILE object create - finish!
-//    var frame_in 		= 0, frame_out = 0, flipuv = 0, noblit = 0, do_md5 = 0, progress = 0;
-//    var stop_after 		= 0, postproc = 0, summary = 0, quiet = 1;
-//    var ec_enabled 		= 0;
-//    var iface 			= newObjectI(vpx_codec_iface_t);//null;
-    var fourcc=[int_];
-    var width=[int_];
-    var height=[int_];
-    var fps_den=[int_];
-    var fps_num=[int_];
-    //var void                   *out = NULL;
-//    var cfg = newObjectI(vpx_codec_dec_cfg_t);//todo: cfg = {0};
-    var input = new input_ctx();//todo: input = {0};//input_ctx
-    var frames_corrupted = 0;
-    var dec_flags = 0;
+	var fn  = null;
+	var i = int_;
+	var buf = [null];
+	var buf_off=[null];
+	var buf_sz = [0], buf_alloc_sz = [0];
+	var infile = {data:AJAX_response, data_off:0}; 
+	var fourcc=[int_];
+	var width=[int_];
+	var height=[int_];
+	var fps_den=[int_];
+	var fps_num=[int_];
+	var input = new input_ctx();
+	var frames_corrupted = 0;
+	var dec_flags = 0;
 
-    input.infile = infile;
-    /*if(file_is_ivf(infile, &fourcc, &width, &height, &fps_den,
-                   &fps_num))
-        input.kind = IVF_FILE;
-    else*/ if(file_is_webm(input, fourcc, width, height, fps_den, fps_num))
-        input.kind = WEBM_FILE;/*
-    else if(file_is_raw(infile, &fourcc, &width, &height, &fps_den, &fps_num))
-        input.kind = RAW_FILE;*/
-    else
-    {
-        //fprintf(stderr, "Unrecognized input file type.\n");
+	input.infile = infile;
+	if(file_is_webm(input, fourcc, width, height, fps_den, fps_num))
+		input.kind = WEBM_FILE;
+	else
+	{
 		alert("Unrecognized input file type.\n");
-        return EXIT_FAILURE;
-    }
+		return EXIT_FAILURE;
+	}
 
-    /* Try to determine the codec from the fourcc. */
-//    for (i = 0; i < sizeof(ifaces) / sizeof(ifaces[0]); i++)
-//        if ((fourcc & ifaces[i].fourcc_mask) == ifaces[i].fourcc)
-//        {
-//            var ivf_iface = ifaces[i].iface;//vpx_codec_iface_t  *
-//
-////todo
-////            if (iface && iface != ivf_iface)
-////                fprintf(stderr, "Notice -- IVF header indicates codec: %s\n",
-////                        ifaces[i].name);
-////            else
-//                iface = ivf_iface;
-//
-//            break;
-//        }
-//
-//    dec_flags = (postproc ? VPX_CODEC_USE_POSTPROC : 0) |
-//                (ec_enabled ? VPX_CODEC_USE_ERROR_CONCEALMENT : 0);
-//    if (vpx_codec_dec_init(decoder, iface ? iface :  ifaces[0].iface, cfg,
-//                           dec_flags))
-//    {
-//        fprintf(stderr, "Failed to initialize decoder: %s\n", vpx_codec_error(decoder));
-//        return EXIT_FAILURE;
-//    }
-//
-//    if (!quiet)
-//        fprintf(stderr, "%s\n", decoder.name);
 	var getElementById_timecode = document.getElementById('timecode');
 	var getElementById_render = document.getElementById('render');
 	var getElementById_frame = document.getElementById('frame');
 	var startdatum = new Date();var ii=0;var isframe;var decoder2 = new vp8_decoder_ctx();
-    /* Decode file */
+
+	/* Decode file */
 	function readframe() {
-		//while ()
-    isframe=!read_frame(input, buf, buf_off, buf_sz, buf_alloc_sz);//while (!read_frame(&input, &buf, &buf_sz, &buf_alloc_sz))
-    if (isframe)setTimeout(function() {//if(buf_sz>1000 && ii>164)alert(ii+' '+buf_sz);if(ii<1) continue;
-        buf=buf[0]; // added by d
-		startdatum = new Date();
-		
-		vp8_dixie_decode_frame(decoder2, buf, buf_sz);
-        buf=[buf]; // added by d
-		var img_avail = decoder2.frame_hdr.is_shown;
-		var img = decoder2.ref_frames[0].img;
-/////		
-//		var iter = [null];//vpx_codec_iter_t
-//        var img=newObjectI(vpx_image_t);//
-//        var timer=newObjectI(vpx_usec_timer);
-//        var                   corrupted=int_;
-//		ii++;++frame_in;
-//        vpx_usec_timer_start(timer);//&timer
-//
-//        if (vpx_codec_decode(decoder, buf, buf_sz, null, 0))
-//        {
-//            var detail = vpx_codec_error_detail(decoder);
-//            fprintf(stderr, "Failed to decode frame: %s\n", vpx_codec_error(decoder));
-//
-//            if (detail)
-//                fprintf(stderr, "  Additional information: %s\n", detail);
-//
-//            alert('goto fail');
-//        }
-//		
-//        vpx_usec_timer_mark(timer);
-//        dx_time += vpx_usec_timer_elapsed(timer);
-//
-//        ++frame_in;
-//
-////        /*todo:if (vpx_codec_control(&decoder, VP8D_GET_FRAME_CORRUPTED, &corrupted))
-////        {
-////            fprintf(stderr, "Failed VP8_GET_FRAME_CORRUPTED: %s\n",
-////                    vpx_codec_error(&decoder));
-////            goto fail;
-////        }*/
-//        frames_corrupted += corrupted;
-//
-//        if ((img = vpx_codec_get_frame(decoder, iter)))
-//            ++frame_out;
-//////		
-		enddatum =new Date();
-		getElementById_timecode.innerHTML=input.pkt[0].timecode+' ('+((input.pkt[0].timecode/1000000000)>>0)+' sec)';
-		if(img_avail) {
-		getElementById_render.innerHTML=(enddatum-startdatum)+'ms<br />FPS:'+(1000/(enddatum-startdatum)).toFixed(2);
-		if (img)
-		vpximg2canvas(img);
-		ii++;
-		getElementById_frame.innerHTML=ii;
-		}
-		readframe();
-    },0);
+		isframe=!read_frame(input, buf, buf_off, buf_sz, buf_alloc_sz);
+		if (isframe)setTimeout(function() {
+			buf=buf[0]; // added by d
+			startdatum = new Date();
+
+			vp8_dixie_decode_frame(decoder2, buf, buf_sz);
+			buf=[buf]; // added by d
+			var img_avail = decoder2.frame_hdr.is_shown;
+			var img = decoder2.ref_frames[0].img;
+
+			enddatum =new Date();
+			getElementById_timecode.innerHTML=
+				input.pkt[0].timecode+' ('+((input.pkt[0].timecode/1000000000)>>0)+' sec)';
+			if(img_avail) {
+				getElementById_render.innerHTML=
+					(enddatum-startdatum)+'ms<br />FPS:'+(1000/(enddatum-startdatum)).toFixed(2);
+				if (img) vpximg2canvas(img);
+				ii++;
+				getElementById_frame.innerHTML=ii;
+			}
+			readframe();
+		},0);
 	}
 	readframe();
 	var enddatum =new Date();
-	//alert(enddatum-startdatum+' '+ii+'frames');
 }
