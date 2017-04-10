@@ -31,7 +31,6 @@ function upStream(stream) {
 	var url = URL.createObjectURL(stream);
 	video.src = url;
 
-	var canvas = document.querySelector('canvas');
-	var context = canvas.getContext("2d");
+	websrv.canvas = document.querySelector('canvas');
 }
 

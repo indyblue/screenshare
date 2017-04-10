@@ -1,18 +1,20 @@
 const http = require('http');
 const port = 8964;
 
-const ebml = require('ebml');
-const enc = new ebml.Encoder();
-const dec = new ebml.Decoder();
+const dixie = require('./zadixie');
 
 let tref = Date.now();
 let buf1 = [];
 let buf1len = 0;
+
+/*
+const ebml = require('ebml');
+const enc = new ebml.Encoder();
+const dec = new ebml.Decoder();
+
 enc.on('data', data=> {
 	buf1.push(data);
 	buf1len+=data.length;
-	/*
-	*/
 });
 
 dec.on('data', data=> {
@@ -32,27 +34,28 @@ dec.on('data', data=> {
 
 	enc.write(data);
 });
+*/
 
+var t = { port: port };
 let listeners = [];
 
-//let buf1 = [];
-//let buf1len = 0;
+t.canvas = null;
+let dixiedone = false;
 let putbuf = buf=> {
 	//console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
-	dec.write(buf);
-	/*
+	//dec.write(buf);
 	buf1.push(buf);
 	buf1len+=buf.length;
-	if(buf1len>1) {
-		let newbuf = Buffer.concat(buf1);
-		dec.write(newbuf);
-		buf1 = [];
-		buf1len=0;
-	}
-	*/
+	if(buf1len>10000 && !dixiedone) {
+		dixiedone=true;
+		var catbuf = Buffer.concat(buf1);
+		if(t.canvas!=null) {
+			dixie.main(catbuf, t.canvas);
+		}
+	};
 };
 
-let putblob = blob=> {
+t.putblob = blob=> {
 	var reader = new FileReader();
 	reader.onload = function() {
 		var buf = Buffer.from(reader.result);
@@ -68,7 +71,4 @@ let server = http.createServer(function (req, res) {
 });
 server.listen(port);
 
-module.exports = {
-	port: port,
-	putblob: putblob
-};
+module.exports = t;

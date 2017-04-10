@@ -23,7 +23,7 @@
 
 "use strict";
 
-
+var window = {};
 
 /* Definition of the argument values for the exit() function stdlib.h*/
 
@@ -51,7 +51,14 @@ function fread ( ptr, size, count, stream ) {
 	ptr.val=new buffer8k();//new Array();
 	//todo: size include
 
-	if(stream.data.length<count+stream.data_off) {stream.data_off += count; return 0; }
+	if(stream.data.length<count+stream.data_off) {
+		//DAS: if we're chunking, we might need to revise this buffer overrun...
+		if(stream.live && !stream.data_off_live) 
+			stream.data_off_live = stream.data_off;
+
+		stream.data_off += count; 
+		return 0; 
+	}
 	for(var i=0;i<count;++i)
 		ptr.val[i]=(stream.data[stream.data_off++]);
 	ptr.val.length=count;
@@ -7472,7 +7479,7 @@ var	ifaces = new Array(
     fourcc_mask:int_
 });
 //#if CONFIG_VP8_DECODER
-   ifaces[0] = {name:"vp8",  iface:new vpx_codec_vp8_dx_algo(),   fourcc:VP8_FOURCC, fourcc_mask:0x00FFFFFF};
+   ifaces[0] = {name:"vp8",  iface:new window.vpx_codec_vp8_dx_algo(),   fourcc:VP8_FOURCC, fourcc_mask:0x00FFFFFF};
 //#endif
 
 var //enum file_kind 202
@@ -7680,14 +7687,19 @@ file_is_webm(input, fourcc, width, height, fps_den, fps_num) {
 
 
 //697
-function main(AJAX_response, argc, argv_)
+function main(AJAX_response, canvas)
 {
 	var fn  = null;
 	var i = int_;
 	var buf = [null];
 	var buf_off=[null];
 	var buf_sz = [0], buf_alloc_sz = [0];
-	var infile = {data:AJAX_response, data_off:0}; 
+	var infile = {
+		data:AJAX_response, 
+		data_off:0,
+		live:false,
+		data_off_live:int_
+	}; 
 	var fourcc=[int_];
 	var width=[int_];
 	var height=[int_];
@@ -7706,9 +7718,6 @@ function main(AJAX_response, argc, argv_)
 		return EXIT_FAILURE;
 	}
 
-	var getElementById_timecode = document.getElementById('timecode');
-	var getElementById_render = document.getElementById('render');
-	var getElementById_frame = document.getElementById('frame');
 	var startdatum = new Date();var ii=0;var isframe;var decoder2 = new vp8_decoder_ctx();
 
 	/* Decode file */
@@ -7724,18 +7733,60 @@ function main(AJAX_response, argc, argv_)
 			var img = decoder2.ref_frames[0].img;
 
 			enddatum =new Date();
-			getElementById_timecode.innerHTML=
-				input.pkt[0].timecode+' ('+((input.pkt[0].timecode/1000000000)>>0)+' sec)';
 			if(img_avail) {
-				getElementById_render.innerHTML=
-					(enddatum-startdatum)+'ms<br />FPS:'+(1000/(enddatum-startdatum)).toFixed(2);
-				if (img) vpximg2canvas(img);
+				if (img && canvas) vpximg2canvas(img, canvas, context);
 				ii++;
-				getElementById_frame.innerHTML=ii;
 			}
 			readframe();
 		},0);
 	}
 	readframe();
 	var enddatum =new Date();
+}
+
+module.exports = {
+	main: main
+};
+
+
+var vpximg2canvasinit = false;
+var context, output, outputData;
+function vpximg2canvas(img, canvas) {
+	if(!vpximg2canvasinit) {
+		canvas.height=img.d_h;
+		canvas.width=img.d_w;
+		context = canvas.getContext("2d");
+
+		output = context.createImageData(canvas.width, canvas.height);
+		outputData = output.data;
+		vpximg2canvasinit = true;
+	}
+
+	var planeY_off=img.planes_off[0],
+			planeU_off=img.planes_off[1],
+			planeV_off=img.planes_off[2],
+			plane=img.planes[0];
+	
+	for (var h=0;h<img.d_h;h++) {
+		var stride_Y_h_off = (img.w)*h,
+			stride_UV_h_off = (img.w>>1)*(h>>1),
+			stride_RGBA_off = (img.d_w<<2)*h;
+		for (var w=0;w<img.d_w;w++) {
+			var Y = plane[planeY_off+ w+stride_Y_h_off],
+				stride_UV_off = (w>>1)+stride_UV_h_off,
+				U = (plane[planeU_off+ stride_UV_off]) - 128,
+				V = (plane[planeV_off+ stride_UV_off]) - 128,
+				R =  (Y + 1.371*V),
+				G =  (Y - 0.698*V - 0.336*U),
+				B =  (Y + 1.732*U),
+				outputData_pos = (w<<2)+stride_RGBA_off;
+
+			outputData[0+outputData_pos] = R;
+			outputData[1+outputData_pos] = G;
+			outputData[2+outputData_pos] = B;
+			outputData[3+outputData_pos] = 255;
+		};			
+	}
+	
+	context.putImageData(output, 0, 0);
 }
