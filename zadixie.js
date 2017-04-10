@@ -7718,7 +7718,10 @@ function main(AJAX_response, canvas)
 		return EXIT_FAILURE;
 	}
 
-	var startdatum = new Date();var ii=0;var isframe;var decoder2 = new vp8_decoder_ctx();
+	var startdatum = new Date();
+	var ii=0;
+	var isframe;
+	var decoder2 = new vp8_decoder_ctx();
 
 	/* Decode file */
 	function readframe() {

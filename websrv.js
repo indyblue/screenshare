@@ -42,7 +42,7 @@ let listeners = [];
 t.canvas = null;
 let dixiedone = false;
 let putbuf = buf=> {
-	//console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
+	console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
 	//dec.write(buf);
 	buf1.push(buf);
 	buf1len+=buf.length;

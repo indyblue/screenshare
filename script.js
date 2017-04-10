@@ -25,7 +25,7 @@ function upStream(stream) {
 	mr.ondataavailable = function(e) {
 		websrv.putblob(e.data);
 	};
-	mr.start(1000);
+	mr.start(50);
 	var video = document.querySelector('video');
 	//var url = 'http://localhost:'+websrv.port;
 	var url = URL.createObjectURL(stream);
