@@ -11,9 +11,9 @@ desktopCapturer.getSources({types: ['window', 'screen']}, (error, sources) => {
 			mandatory: {
 				chromeMediaSource: 'desktop',
 				chromeMediaSourceId: sources[0].id,
-				maxWidth: 500,
+				maxWidth: 1000,
 				maxHeight: 500,
-				maxFrameRate: 4
+				maxFrameRate: 5
 			}
 		}
 	}).then(upStream);
@@ -31,6 +31,6 @@ function upStream(stream) {
 	var url = URL.createObjectURL(stream);
 	video.src = url;
 
-	websrv.canvas = document.querySelector('canvas');
+	websrv.setcanvas(document.querySelector('canvas'));
 }
 

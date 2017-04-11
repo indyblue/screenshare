@@ -7942,9 +7942,30 @@ function main(AJAX_response, argc, argv_)
 		ID_CLUSTER: ID_CLUSTER,
 		ID_EBML: ID_EBML,
 		ID_SIMPLE_BLOCK: ID_SIMPLE_BLOCK,
+		WEBM_FILE: WEBM_FILE,
+
 		input_ctx: input_ctx,
-		ne_peek_element: ne_peek_element,
+		ne_sneak_peek: function(ctx, id, size) {
+			var lid = ctx.last_id;
+			var lsize = ctx.last_size;
+			ctx.last_id = 0; 
+			ctx.last_size = 0;
+			var nepe = ne_peek_element(ctx, id, size);
+			ctx.last_id = lid; 
+			ctx.last_size = lsize;
+			return nepe;
+		},
+		ne_peek_element: function(ctx, id, size) {
+			ctx.last_id = 0; 
+			ctx.last_size = 0;
+			var nepe = ne_peek_element(ctx, id, size);
+			return nepe;
+		},
 		vp8_dixie_decode_frame: vp8_dixie_decode_frame,
+		vp8_decoder_ctx: vp8_decoder_ctx,
+		file_is_webm: file_is_webm,
+		read_frame: read_frame,
+
 		new_input: function() {
 			var input = new input_ctx();
 			input.infile = {
@@ -7958,10 +7979,7 @@ function main(AJAX_response, argc, argv_)
 				userdata:input.infile
 			};
 			return input;
-		},
-		file_is_webm: file_is_webm,
-		read_frame: read_frame,
-		vp8_dixie_decode_frame: vp8_dixie_decode_frame
+		}
 	};
 	dixie = d;
 })();

@@ -3,44 +3,17 @@ const port = 8964;
 
 const sdixie = require('./zsdixie');
 
+
 let tref = Date.now();
 let buf1 = [];
 let buf1len = 0;
 
-/*
-const ebml = require('ebml');
-const enc = new ebml.Encoder();
-const dec = new ebml.Decoder();
-
-enc.on('data', data=> {
-	buf1.push(data);
-	buf1len+=data.length;
-});
-
-dec.on('data', data=> {
-	if (data[0] === 'start' && data[1].name === 'Cluster') {
-		console.log('write', buf1len, (Date.now()-tref)/1000);
-		let catbuf = Buffer.concat(buf1);
-		buf1 = [];
-		buf1len = 0;
-		for(var i=0;i<listeners.length;i++) {
-			var res = listeners[i];
-			res.write(catbuf);
-		}
-	}
-
-	//if(data[1].name!='SimpleBlock')
-		console.log(data[0], data[1].name, data[1].dataSize, data);
-
-	enc.write(data);
-});
-*/
-
 var t = { port: port };
 let listeners = [];
 
-t.canvas = null;
-let dixiedone = false;
+t.setcanvas = function(canvas) {
+	sdixie.setcanvas(canvas);
+};
 let putbuf = buf=> {
 	//console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
 	sdixie.write(buf);
