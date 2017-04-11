@@ -1,7 +1,7 @@
 const http = require('http');
 const port = 8964;
 
-const dixie = require('./zadixie');
+const sdixie = require('./zsdixie');
 
 let tref = Date.now();
 let buf1 = [];
@@ -42,17 +42,9 @@ let listeners = [];
 t.canvas = null;
 let dixiedone = false;
 let putbuf = buf=> {
-	console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
-	//dec.write(buf);
-	buf1.push(buf);
+	//console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
+	sdixie.write(buf);
 	buf1len+=buf.length;
-	if(buf1len>10000 && !dixiedone) {
-		dixiedone=true;
-		var catbuf = Buffer.concat(buf1);
-		if(t.canvas!=null) {
-			dixie.main(catbuf, t.canvas);
-		}
-	};
 };
 
 t.putblob = blob=> {
