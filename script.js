@@ -1,7 +1,44 @@
-const {remote, desktopCapturer} = require('electron');
+const {remote, desktopCapturer, ipcRenderer, screen} = require('electron');
 const websrv = require('./websrv');
+global.$ = $;
+global.mainWindow = remote.getGlobal('mainWindow');
 
-desktopCapturer.getSources({types: ['window', 'screen']}, (error, sources) => {
+let sharemr = null;
+$(document).ready(()=>{
+	let $button = $('#share');
+	$button.click(e=> {
+		if(sharemr!=null) {
+			stopStream();
+			$button.text('Start sharing');
+		}
+		else {
+			desktopCapturer.getSources({types: ['window', 'screen']},
+				fnHandleSources);
+			$button.text('Stop sharing');
+		}
+	});
+	let $canvas = $('canvas');
+	$canvas.on('mousemove', e=> {
+		var t = e;
+		var coff = $canvas.offset();
+		var ew = $canvas.width();
+		var eh = $canvas.height();
+		var cx = (e.clientX - coff.left) / ew;
+		var cy = (e.clientY - coff.top) / eh;
+		var disp = screen.getPrimaryDisplay();
+		var ds = disp.size;
+		var dx = Math.floor(ds.width * cx);
+		var dy = Math.floor(ds.height * cy);
+		ipcRenderer.send('wincrs', dx, dy);
+		//console.log(e.clientX, e.clientY, e.offsetX, e.offsetY, cx, cy);
+	}).on('mouseout', e=> {
+		ipcRenderer.send('wincrs', -1);
+	}).on('click', e=> {
+		ipcRenderer.send('wincrs-click');
+	});
+});
+
+function fnHandleSources(error, sources) {
 	if (error) throw error
 
 	if(sources.length==0) return;
@@ -18,19 +55,24 @@ desktopCapturer.getSources({types: ['window', 'screen']}, (error, sources) => {
 		}
 	}).then(upStream);
 	return;
-});
+}
 
 function upStream(stream) {
-	var mr = new MediaRecorder(stream);
-	mr.ondataavailable = function(e) {
+	sharemr = new MediaRecorder(stream);
+	sharemr.ondataavailable = function(e) {
 		websrv.putblob(e.data);
 	};
-	mr.start(50);
-	var video = document.querySelector('video');
+	sharemr.start(50);
+	//var video = document.querySelector('video');
 	//var url = 'http://localhost:'+websrv.port;
 	var url = URL.createObjectURL(stream);
-	video.src = url;
+	//video.src = url;
 
 	websrv.setcanvas(document.querySelector('canvas'));
 }
 
+function stopStream() {
+	sharemr.stop();
+	sharemr = null;
+	websrv.clearcanvas();
+}

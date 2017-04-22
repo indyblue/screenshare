@@ -14,6 +14,7 @@ let listeners = [];
 t.setcanvas = function(canvas) {
 	sdixie.setcanvas(canvas);
 };
+t.clearcanvas = sdixie.clearcanvas;
 let putbuf = buf=> {
 	//console.log(`${buf.length} bytes of data, ${listeners.length} listeners`);	
 	sdixie.write(buf);

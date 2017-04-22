@@ -13,6 +13,18 @@ var streamdixie;
 		output: null,
 		outputData: null
 	};
+	function clearcanvas() {
+		if(lc.canvas == null) return;
+		if(lc.context == null) 
+			lc.context = lc.canvas.getContext("2d");
+		lc.canvas.height=10;
+		lc.canvas.width=10;
+		lc.context.clearRect(0, 0, lc.canvas.width, lc.canvas.height);
+		lc.canvas = null;
+		lc.context = null;
+		lc.outputData = null;
+	}
+
 	function vpximg2canvas(img) {
 		if(lc.canvas == null) return;
 		if(lc.outputData==null) {
@@ -317,10 +329,12 @@ var streamdixie;
 		setcanvas: function(c) {
 			if(typeof c!='undefined' && c instanceof HTMLCanvasElement) {
 				lc.canvas = c;
+				lc.context = null;
 				lc.outputData = null;
 				return true;
 			} else return false;
-		}
+		},
+		clearcanvas: clearcanvas
 	};
 })();
 

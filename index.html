@@ -3,18 +3,27 @@
 <head>
 <title>Screen Share</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
 <script type="text/javascript" src="script.js"></script>
+<script>if (window.module) module = window.module;</script>
 <style>
 video {
 	border:1px solid black;
 //	width:95%;
 //	height:95%;
+}
+canvas { border:1px solid black; }
 </style>
 </head>
 <body>
-<video >
-</video>
+<!--<video > </video>-->
+<button id='share'>Start sharing</button>
+<select id='rate'>
+	<option value='2'>High</option>
+	<option value='1'>Medium</option>
+	<option value='0'>Low</option>
+</select>
 <hr/>
 <canvas></canvas>
 <hr/>
