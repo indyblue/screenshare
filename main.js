@@ -23,8 +23,10 @@ app.on('ready', function() {
 		focusable: false,
 		show: false,
 		hasShadow: false,
+		resizeable: false,
+		alwaysOnTop: true,
 		parent:mainWindow, 
-		backgroundColor: '#2e2c29' 
+		backgroundColor: '#f00'
 	});
 	cursorWindow.hide();
 	cursorWindow.setIgnoreMouseEvents(true);
